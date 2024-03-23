@@ -9,6 +9,8 @@ COPY . .
 
 # Download the dependencies
 RUN go mod download
+RUN go get github.com/IBM/sarama
+RUN go get golang.org/x/crypto/blake2b@v0.19.0
 
 # Build the Go app
 #RUN go build -o main .

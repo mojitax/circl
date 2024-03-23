@@ -4,7 +4,8 @@
 Broker:
 ./Broker_docker/build_image.sh
 
-
+Consumer:
+./Consumer_docker/build_image.sh
 
 
 # CIRCL
