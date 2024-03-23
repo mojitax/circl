@@ -79,7 +79,9 @@ func main() {
 				ciphertext, _ := pk.Encrypt(rand.Reader, policy, decoded)
 				log.Printf("Ciphertext: %x\n", ciphertext)
 				policymap := policy.ExtractAttributeValuePairs()
+				//`(Topic: medical) and (country: US)`
 				newtopic := policymap["Topic"][0]
+
 				encoded := b64.URLEncoding.EncodeToString(ciphertext)
 				var outgoing Message = Message{
 					policy:         message.policy,
@@ -92,6 +94,7 @@ func main() {
 				outmessage := &sarama.ProducerMessage{
 					Topic: newtopic,
 					Value: sarama.ByteEncoder(jsonData),
+					Key:   sarama.StringEncoder(newtopic + "1"),
 				}
 				if _, _, err := producer.SendMessage(outmessage); err != nil {
 					log.Printf("Failed to publish message: %v\n", err)

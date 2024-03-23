@@ -1,5 +1,12 @@
 <img src=".etc/icon.png" align="right" height="300" width="300"/>
 
+# Instructions
+Broker:
+./Broker_docker/build_image.sh
+
+
+
+
 # CIRCL
 
 [![GitHub release](https://img.shields.io/github/release/cloudflare/circl.svg)](https://GitHub.com/cloudflare/circl/releases/)
