@@ -47,7 +47,7 @@ func main() {
 		fmt.Println("Consumer topic is required.")
 		return
 	}
-
+	topic := goka.Stream(*consumerTopic)
 	brokers := []string{"localhost:9092"}
 
 	pkdec, _ := hex.DecodeString(pkstring)
@@ -89,7 +89,9 @@ func main() {
 
 // Define the message handler function
 func handle(ctx goka.Context, msg interface{}) {
-	message := msg.(*Message)
+	var message Message
+	json.Unmarshal(msg.([]byte), &message)
+
 	policy := tkn20.Policy{}
 	err := policy.FromString(message.Policy)
 	if err != nil {
