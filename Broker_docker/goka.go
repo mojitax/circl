@@ -11,7 +11,9 @@ import (
 	"log"
 	"os"
 	"os/signal"
+	"time"
 
+	"github.com/IBM/sarama"
 	"github.com/cloudflare/circl/abe/cpabe/tkn20"
 	"github.com/lovoo/goka"
 	"github.com/lovoo/goka/codec"
@@ -47,6 +49,46 @@ func main() {
 		fmt.Println("Consumer topic is required.")
 		return
 	}
+	{
+		config := sarama.NewConfig()
+		config.Producer.Return.Successes = true
+		config.Producer.RequiredAcks = sarama.WaitForLocal       // Wait for only the leader to acknowledge the message
+		config.Producer.Compression = sarama.CompressionSnappy   // Compress messages
+		config.Producer.Flush.Frequency = 500 * time.Millisecond // Flush batches every 500ms
+
+		// Initialize Kafka producer
+		producer, err := sarama.NewSyncProducer([]string{"localhost:9092"}, config)
+		if err != nil {
+			log.Fatalf("Failed to create producer: %v", err)
+		}
+		defer producer.Close()
+
+		// Create a Message object
+		message := Message{
+			Policy:        "Topic: Medical",
+			MessageBase64: base64.StdEncoding.EncodeToString([]byte("ranny")),
+		}
+
+		// Marshal Message object to JSON
+		jsonMessage, err := json.Marshal(message)
+		if err != nil {
+			log.Fatalf("Failed to marshal message to JSON: %v", err)
+		}
+
+		// Produce message to Kafka topic
+		msg := &sarama.ProducerMessage{
+			Topic: "input-topic",
+			Value: sarama.StringEncoder(jsonMessage),
+		}
+		partition, offset, err := producer.SendMessage(msg)
+		if err != nil {
+			log.Fatalf("Failed to produce message: %v", err)
+		}
+
+		log.Printf("Produced message: %v, to topic: %s, partition: %d, offset: %d", msg.Value, msg.Topic, partition, offset)
+
+	}
+
 	topic := goka.Stream(*consumerTopic)
 	brokers := []string{"localhost:9092"}
 
