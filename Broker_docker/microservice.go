@@ -1,4 +1,4 @@
-package main
+/*package main
 
 import (
 	"crypto/rand"
@@ -108,4 +108,5 @@ func main() {
 	}()
 
 	<-doneCh
-}
+}*/
+
